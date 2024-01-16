@@ -1,0 +1,6 @@
+[2021-01-04 00:03:56] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Maximum execution time of 30 seconds exceeded' in E:\ACS\Server\biapi\vendor\laravel\framework\src\Illuminate\Database\Connection.php:325
+Stack trace:
+#0 {main}  
+[2021-01-04 00:04:53] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Maximum execution time of 30 seconds exceeded' in E:\ACS\Server\biapi\vendor\laravel\framework\src\Illuminate\Database\Connection.php:325
+Stack trace:
+#0 {main}  

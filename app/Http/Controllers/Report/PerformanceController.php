@@ -1,0 +1,247 @@
+<?php
+
+namespace App\Http\Controllers\Report;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use DateTime;
+use Illuminate\Support\Facades\DB;
+use Excel;
+use File;
+
+class PerformanceController extends Controller
+{
+    //Visits
+    public function sp_footfall_performance_data_by_site(Request $request)
+    {
+        try {
+            $request_user = $request->user();
+            $user_id = $request_user->id;
+            $organization_id = $request->organization_id;
+            $site_id = $request->site_id;
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $view_by = $request->view_by;
+            $operation = $request->operation;
+            $items = DB::select("exec sp_general_report_data_in_out_by_site $user_id, $organization_id, $site_id, $start_time, $end_time, $start_date, $end_date, $view_by,  $operation");
+            return response()->json($items);
+        } catch (\Exception $e) {
+            $response = [];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
+            return response()->json($response);
+        }
+    }
+
+    public function sp_footfall_performance_time_comparison(Request $request)
+    {
+        try {
+            $request_user = $request->user();
+            $user_id = $request_user->id;
+            $organization_id = $request->organization_id;
+            $site_id = $request->site_id;
+
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+
+            $view_by = $request->view_by;
+
+            $start_date_compare = $request->start_date_compare;
+            $end_date_compare = $request->end_date_compare;
+            $operation = $request->operator;
+            $items = DB::select("exec sp_general_report_data_in_out_by_site $user_id, $organization_id, $site_id, $start_time, $end_time, $start_date, $end_date, $view_by, $operation");
+            $itemsComapare = DB::select("exec sp_general_report_data_in_out_by_site $user_id, $organization_id, $site_id, $start_time, $end_time, $start_date_compare, $end_date_compare, $view_by, $operation");
+            return response()->json(array('data' => $items, 'data_compare' => $itemsComapare));
+        } catch (\Exception $e) {
+            $response = [];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
+            return response()->json($response);
+        }
+    }
+
+    public function sp_footfall_performance_store_comparison(Request $request)
+    {
+        try {
+            $request_user = $request->user();
+            $user_id = $request_user->id;
+            $organization_id = $request->organization_id;
+            $site_id = $request->site_id;
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $view_by = $request->view_by;
+            // $operation = $request->operation;
+            $operation = $request->operator;
+            $items = DB::select("exec sp_general_report_data_in_out_by_site $user_id, $organization_id, $site_id, $start_time, $end_time, $start_date, $end_date, $view_by, $operation");
+
+            $organization_id_compare = $request->organization_id_compare;
+            $site_id_compare = $request->site_id_compare;
+
+            $itemsComapare = DB::select("exec sp_general_report_data_in_out_by_site $user_id, $organization_id_compare, $site_id_compare, $start_time, $end_time, $start_date, $end_date, $view_by, $operation");
+
+            return response()->json(array('data' => $items, 'data_compare' => $itemsComapare));
+        } catch (\Exception $e) {
+            $response = [];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
+            return response()->json($response);
+        }
+    }
+
+    public function  sp_footfall_performance_download_file_import(Request $request)
+    {
+        try {
+            $site_code = $request->site_code;
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $indexOption = $request->indexOption;
+            $start =  Carbon::parse($start_date . '00:00');
+            $end =  Carbon::parse($end_date . '23:00');
+            $column0 = '';
+            $column1 = '';
+            $column2 = '';
+            $column3 = '';
+            $column4 = '';
+            $column5 = '';
+            $column6 = '';
+            $column7 = '';
+            $column8 = '';
+            $column9 = '';
+            $column10 = '';
+            $column11 = '';
+            $column12 = '';
+            $column13 = '';
+            foreach ($indexOption as $key => $item) {
+                ${'column' . $key} = $item;
+            }
+            while ($start <= $end) {
+                $items1[] = array(
+                    'Site_code'    => $site_code,
+                    'Start_time'      => $start->format('Y/m/d h:i A'),
+                    $column0      =>  null,
+                    $column1      =>  null,
+                    $column2      =>  null,
+                    $column3      =>  null,
+                    $column4      =>  null,
+                    $column5      =>   null,
+                    $column6      =>   null,
+                    $column7      =>   null,
+                    $column8      =>   null,
+                    $column9      =>   null,
+                    $column10      =>   null,
+                    $column11      =>   null,
+                    $column12      =>   null,
+                    $column13      =>   null,
+                );
+                $start =  $start->addHour();
+            }
+            $name = Carbon::today()->format('d_m_Y') . 'v' . rand(1, 1000);
+            Excel::create('FILE_IMPORT_DATA_' . $name, function ($excel)  use ($items1) {
+                $title1 = 'Dữ liệu đầu vào';
+                $this->get_sheet_second($title1, $excel, $items1);
+            })->store('xlsx', public_path('exports'));
+            $file_name = 'FILE_IMPORT_DATA_' . $name . '.xlsx';
+        } catch (\Exception $e) {
+            $response = [];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
+            return response()->json($response);
+        }
+        return response()->json($file_name);
+    }
+
+    public function  sp_footfall_performance_insert_data(Request $request)
+    {
+        $action_result = -1;
+        $request_user = $request->user();
+        $user_id = $request_user->id;
+        $organization_id = $request->organization_id;
+
+        $data = json_decode($request->data);
+        $num_to_enter_boo = (int) $data->num_to_enter;
+        $num_to_exit_boo = (int) $data->num_to_exit;
+        $avg_time_boo = (int) $data->avg_time;
+        $passer_by_boo = (int) $data->passer_by;
+        $staff_boo = (int) $data->staff;
+        $staff_traffic_boo = (int) $data->staff_traffic;
+        $kids_visits_boo = (int) $data->kids_visits;
+        $loyal_visits_boo = (int) $data->loyal_visits;
+        $loyal_purchased_boo = (int) $data->loyal_purchased;
+        $transactions_boo = (int) $data->transactions;
+        $sales_boo = (int) $data->sales;
+        $items_boo = (int) $data->items;
+
+        $counter = 0;
+        $counter_fail = 0;
+        try {
+            if ($request->hasFile('file')) {
+                $extension = File::extension($request->file->getClientOriginalName());
+                $extension = strtolower($extension);
+
+                if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {
+                    $path = $request->file->getRealPath();
+                    $datas = Excel::selectSheetsByIndex(0)->load($path, function ($reader) {
+                        $reader->formatDates(true, 'Y-m-d h:i:s');
+                        // $reader->ignoreEmpty();
+                    })->get()->toArray();
+                    if (count($datas) > 0) {
+                        foreach ($datas as $key => $value) {
+                            if (array_key_exists('site_code', $value) && isset($value['site_code'])  &&  isset($value['start_time'])) {
+                                $site_code =  $value['site_code'] ?  trim($value['site_code']) : "";
+                                $start_time = "'" . $value['start_time'] . "'";
+
+                                $num_to_enter = array_key_exists('enter', $value) && is_numeric($value['enter']) ? $value['enter'] : 0;
+                                $num_to_exit = array_key_exists('exits', $value) && is_numeric($value['exits']) ?  $value['exits'] : 0;
+                                $avg_time = array_key_exists('time_spent', $value) && is_numeric($value['time_spent']) ? $value['time_spent']  : 0;
+                                $passer_by = array_key_exists('passer_by', $value) && is_numeric($value['passer_by']) ? $value['passer_by'] : 0;
+                                $staff_traffic = array_key_exists('staff_traffic', $value) && is_numeric($value['staff_traffic']) ? $value['staff_traffic'] : 0;
+                                $staff = array_key_exists('staff', $value) && is_numeric($value['staff']) ? $value['staff'] : 0;
+                                $transactions = array_key_exists('transactions', $value) && is_numeric($value['transactions']) ? $value['transactions'] : 0;
+                                $sales = array_key_exists('sales', $value) && is_numeric($value['sales']) ? $value['sales'] : 0;
+                                $items =  array_key_exists('items', $value) && is_numeric($value['items']) ?  $value['items'] : 0;
+                                $kids_visits = array_key_exists('kids_visits', $value) && is_numeric($value['kids_visits']) ? $value['kids_visits']  : 0;
+                                $loyal_visits = array_key_exists('loyal_visits', $value) && is_numeric($value['loyal_visits']) ? $value['loyal_visits'] : 0;
+                                $loyal_purchased = array_key_exists('loyal_purchased', $value) && is_numeric($value['loyal_purchased']) ? $value['loyal_purchased'] : 0;
+
+                                $status = DB::select("exec sp_general_report_import_data $num_to_enter_boo, $num_to_exit_boo, $avg_time_boo, $passer_by_boo, $staff_traffic_boo, $staff_boo, $transactions_boo, $sales_boo, $items_boo, $kids_visits_boo, $loyal_visits_boo, $loyal_purchased_boo, $user_id, $organization_id, '$site_code', $start_time, $num_to_enter, $num_to_exit, $avg_time, $passer_by, $staff_traffic, $staff, $transactions, $sales, $items, $kids_visits, $loyal_visits, $loyal_purchased");
+                                if ($status[0]->result == 0) {
+                                    $action_result = 0;
+                                } else {
+                                    $counter++;
+                                    $action_result = 1;
+                                }
+                            }
+                        }
+                        return response()->json(array('status' => $action_result, 'counter' => $counter, 'counter_fail' => $counter_fail));
+                    }
+                }
+            }
+            return response()->json(array('status' => $action_result));
+        } catch (\Exception $e) {
+            $response = [];
+            $response['status'] = 0;
+            $response['message'] = $e->getMessage();
+            return response()->json($response);
+        }
+    }
+
+    public function get_sheet_second(&$title, &$excel, &$items)
+    {
+        $excel->sheet($title, function ($sheet) use ($items) {
+            $sheet->getStyle('A0')->getAlignment()->applyFromArray(array('horizontal' => 'center'));
+            $sheet->setWidth(['A' => 18, 'B' => 18, 'C' => 13, 'D' => 13, 'E' => 13, 'F' => 13, 'G' => 13, 'H' => 13, 'I' => 13, 'J' => 13, 'K' => 13, 'L' => 13, 'M' => 13, 'N' => 13,]);
+            $sheet->setStyle(array('font' => array('name' => 'Times New Roman', 'size' =>  11)));
+            // $sheet->setHeight(array(7 =>  27));
+            $sheet->setOrientation('landscape');
+            $sheet->fromArray($items, NULL, 'A1', true, true);
+        });
+    }
+}

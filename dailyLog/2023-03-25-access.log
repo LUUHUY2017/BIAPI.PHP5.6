@@ -1,0 +1,6 @@
+[2023-03-25 00:01:54] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Maximum execution time of 30 seconds exceeded' in E:\ACS\Server\biapi\vendor\phpoffice\phpexcel\Classes\PHPExcel\DocumentSecurity.php:37
+Stack trace:
+#0 {main}  
+[2023-03-25 00:02:28] local.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 'Maximum execution time of 30 seconds exceeded' in E:\ACS\Server\biapi\vendor\symfony\css-selector\XPath\Extension\AttributeMatchingExtension.php:28
+Stack trace:
+#0 {main}  

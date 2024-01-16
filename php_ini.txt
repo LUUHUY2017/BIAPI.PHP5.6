@@ -1,0 +1,4 @@
+[PHP_MS_SQL_PDO]
+extension=php_curl.dll
+extension=php_pdo_sqlsrv_73_ts_x64.dll
+extension=php_sqlsrv_73_ts_x64.dll

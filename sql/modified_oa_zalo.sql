@@ -1,0 +1,1 @@
+ALTER TABLE oa_zalo ADD qrcode_image VARCHAR(150);

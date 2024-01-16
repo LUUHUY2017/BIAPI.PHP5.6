@@ -1,0 +1,1 @@
+ALTER TABLE send_email_details ADD secret_key varchar(50)

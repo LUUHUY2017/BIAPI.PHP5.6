@@ -3,3 +3,9 @@
 [PHP_MS_SQL_PDO]
 extension=php_pdo_sqlsrv_56_ts.dll
 extension=php_sqlsrv_56_ts.dll
+
+
+
+ git add .
+ git commit -m "first commit"
+ git push -u origin main

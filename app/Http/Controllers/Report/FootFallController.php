@@ -365,6 +365,12 @@ class FootFallController extends Controller
                     $value = [$column, $row, (int) $items[$i]->num_to_enter];
                 if ($index_source == 'SHOPPERS')
                     $value = [$column, $row, (int) $items[$i]->shopper_visits];
+                if ($index_source == 'EXITS')
+                $value = [$column, $row, (int) $items[$i]->num_to_exit];
+
+
+
+
                 array_push($array, $value);
             }
             return response()->json(['time_hour' => $time_hour, 'time_day' => $time_day, 'data' => $array]);

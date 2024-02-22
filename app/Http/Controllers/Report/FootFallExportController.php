@@ -59,6 +59,7 @@ class FootFallExportController extends Controller
             // Lấy tổng đánh giá để tính phần trăm
             $passer_by = 0;
             $total_num_to_enter = 0;
+            $total_num_to_exit = 0;
             $shopper_visits = 0;
             $kids_visits = 0;
             $turn_in_rate = 0;
@@ -68,6 +69,7 @@ class FootFallExportController extends Controller
             foreach ($items as $item) {
                 $passer_by  += (int) $item->passer_by;
                 $total_num_to_enter  += (int) $item->num_to_enter;
+                $total_num_to_exit  += (int) $item->num_to_exit;
                 $kids_visits  += (int) $item->kids_visits;
                 $shopper_visits  += (int) $item->shopper_visits;
                 $turn_in_rate    += (float) $item->turn_in_rate;
@@ -81,6 +83,7 @@ class FootFallExportController extends Controller
             if ($export === 'xuhuong') {
                 $passer_by = ($row) > 0 ? (int) number_format(($passer_by / ($row)), 2, '.', '') : 0;
                 $total_num_to_enter = ($row) > 0 ? (int) number_format(($total_num_to_enter / ($row)), 2, '.', '') : 0;
+                $total_num_to_exit = ($row) > 0 ? (int) number_format(($total_num_to_exit / ($row)), 2, '.', '') : 0;
                 $kids_visits = ($row) > 0 ? (int) number_format(($kids_visits / ($row)), 2, '.', '') : 0;
                 $total_traffic = ($row) > 0 ? (int) number_format(($total_traffic / ($row)), 2, '.', '') : 0;
                 $shopper_visits = ($row) > 0 ? (int) number_format(($shopper_visits / ($row)), 2, '.', '') : 0;
@@ -90,8 +93,9 @@ class FootFallExportController extends Controller
             $items2[] = $items1[] = array(
                 'Date/Time'           =>  '',
                 'PasserBy'            => $passer_by,
-                'Visitors'              => $total_num_to_enter,
-                'Shoppers'      => $shopper_visits,
+                'Visitors'            => $total_num_to_enter,
+                'Exits'               => $total_num_to_exit,
+                'Shoppers'            => $shopper_visits,
                 'Turn in rate (%)'     => $turn_in_rate . ' %',
                 'Traffic Flow'        => $total_traffic,
                 'Kids Visits'         => $kids_visits,
@@ -102,6 +106,7 @@ class FootFallExportController extends Controller
                     'Date/Time'           => $item->time_period,
                     'PasserBy'            => (int) $item->passer_by,
                     'Visitors'              => (int) $item->num_to_enter,
+                    'Exits'              => (int) $item->num_to_exit,
                     'Shoppers'      => (int) $item->shopper_visits,
                     'Turn in rate (%)'     => (float) $item->turn_in_rate . ' %',
                     'Traffic Flow'        => (int) $item->traffic,
@@ -109,6 +114,7 @@ class FootFallExportController extends Controller
                     'Avg Time'      => $this->changeSecondsToformatTime((float) $item->avg_time * 60),
                 );
                 $num_to_enter_per = ($item->num_to_enter) > 0 ? (float) number_format((($item->num_to_enter / ($total_num_to_enter)) * 100), 2, '.', '') : 0;
+                $num_to_exit_per = ($item->num_to_exit) > 0 ? (float) number_format((($item->num_to_exit / ($total_num_to_exit)) * 100), 2, '.', '') : 0;
                 $kids_visits_per = ($item->kids_visits) > 0 ? (float) number_format((($item->kids_visits / ($kids_visits)) * 100), 2, '.', '') : 0;
                 $shopper_visits_per = ($item->shopper_visits) > 0 ? (float) number_format((($item->shopper_visits / ($shopper_visits)) * 100), 2, '.', '') : 0;
                 $passer_by_per = ($item->passer_by) > 0 ? (float) number_format((($item->passer_by / ($passer_by)) * 100), 2, '.', '') : 0;
@@ -117,6 +123,7 @@ class FootFallExportController extends Controller
                     'Date/Time'           => $item->time_period,
                     'PasserBy'            => (float) $passer_by_per . ' %',
                     'Visitors'              => (float) $num_to_enter_per . ' %',
+                    'Exits'              => (float) $num_to_exit_per . ' %',
                     'Shoppers'      => (float) $shopper_visits_per . ' %',
                     'Turn in rate (%)'    => (float) $item->turn_in_rate . ' %',
                     'Traffic Flow'        => (float) $traffic_per . ' %',
@@ -204,6 +211,7 @@ class FootFallExportController extends Controller
             }
             $passer_by1 = 0;
             $total_num_to_enter1 = 0;
+            $total_num_to_exit1 = 0;
             $shopper_visits1 = 0;
             $kids_visits1 = 0;
             $turn_in_rate1 = 0;
@@ -211,6 +219,7 @@ class FootFallExportController extends Controller
             $total_avg_time1 = 0;
             $passer_by2 = 0;
             $total_num_to_enter2 = 0;
+            $total_num_to_exit2 = 0;
             $shopper_visits2 = 0;
             $kids_visits2 = 0;
             $turn_in_rate2 = 0;
@@ -221,6 +230,7 @@ class FootFallExportController extends Controller
             foreach ($items as $key1 => $item) {
                 $passer_by1  += (int) $item->passer_by;
                 $total_num_to_enter1  += (int) $item->num_to_enter;
+                $total_num_to_exit1  += (int) $item->num_to_exit;
                 $kids_visits1  += (int) $item->kids_visits;
                 $shopper_visits1  += (int) $item->shopper_visits;
                 $turn_in_rate1  += (float) $item->turn_in_rate;
@@ -229,6 +239,7 @@ class FootFallExportController extends Controller
 
                 $passer_by2  += (int) $itemsComapare[$key1]->passer_by;
                 $total_num_to_enter2  += (int) $itemsComapare[$key1]->num_to_enter;
+                $total_num_to_exit2  += (int) $itemsComapare[$key1]->num_to_exit;
                 $kids_visits2  += (int) $itemsComapare[$key1]->kids_visits;
                 $shopper_visits2  += (int) $itemsComapare[$key1]->shopper_visits;
                 $turn_in_rate2  += (float) $itemsComapare[$key1]->turn_in_rate;
@@ -247,6 +258,7 @@ class FootFallExportController extends Controller
             if ($export === 'xuhuong') {
                 $passer_by1 = ($row) > 0 ? (int) number_format(($passer_by1 / ($row)), 2, '.', '') : 0;
                 $total_num_to_enter1 = ($row) > 0 ? (int) number_format(($total_num_to_enter1 / ($row)), 2, '.', '') : 0;
+                $total_num_to_exit1 = ($row) > 0 ? (int) number_format(($total_num_to_enter1 / ($row)), 2, '.', '') : 0;
                 $kids_visits1 = ($row) > 0 ? (int) number_format(($kids_visits1 / ($row)), 2, '.', '') : 0;
                 $total_traffic1 = ($row) > 0 ? (int) number_format(($total_traffic1 / ($row)), 2, '.', '') : 0;
                 $shopper_visits1 = ($row) > 0 ? (int) number_format(($shopper_visits1 / ($row)), 2, '.', '') : 0;
@@ -257,6 +269,7 @@ class FootFallExportController extends Controller
                 $shopper_visits2 = ($row) > 0 ? (int) number_format(($shopper_visits2 / ($row)), 2, '.', '') : 0;
             }
             $this->get_column_excel($visits, $org_name1, $org_name2, $total_num_to_enter1, $total_num_to_enter2);
+            $this->get_column_excel($exit, $org_name1, $org_name2, $total_num_to_exit1, $total_num_to_exit2);
             $this->get_column_excel($traffic, $org_name1, $org_name2, $total_traffic1, $total_traffic2);
             $this->get_column_excel($shopper, $org_name1, $org_name2, $shopper_visits1, $shopper_visits2);
             $this->get_column_excel($passer, $org_name1, $org_name2, $passer_by1, $passer_by2);
@@ -264,12 +277,12 @@ class FootFallExportController extends Controller
             $this->get_column_excel($turn_rate, $org_name1, $org_name2, $turn_in_rate1, $turn_in_rate2);
             $this->get_column_excel($avg_time, $org_name1, $org_name2, $total_avg_time1, $total_avg_time2, true);
             foreach ($items as $key1 => $item) {
-                $this->get_more_column_excel($org_name1, $org_name2, $item,  $itemsComapare,  $key1,  $visits, $traffic, $shopper,  $passer,   $kids,    $turn_rate,  $avg_time);
+                $this->get_more_column_excel($org_name1, $org_name2, $item,  $itemsComapare,  $key1,  $visits, $traffic,$exits, $shopper,  $passer,   $kids,    $turn_rate,  $avg_time);
             }
 
             $name = Carbon::today()->format('d_m_Y') . 'v' . rand(1, 1000);
             $value_header =  $this->get_value_header_store($start_date, $end_date, $start_time, $end_time, $org_name1, $org_name2);
-            Excel::create('FOOTFALL_STORE_COMPARISON_' . $name, function ($excel) use ($visits, $traffic, $passer, $shopper, $turn_rate, $kids, $avg_time, $value_header, $index_not) {
+            Excel::create('FOOTFALL_STORE_COMPARISON_' . $name, function ($excel) use ($visits, $traffic,$exits, $passer, $shopper, $turn_rate, $kids, $avg_time, $value_header, $index_not) {
                 $header = array(
                     'dong1' => 'The results of measuring the number of visitors in and out at the point: ' . $value_header['value1'] . ' ',
                     'dong2' => 'Time:  ' . $value_header['value2'] . '  ',
@@ -278,6 +291,7 @@ class FootFallExportController extends Controller
                 $excel->setCreator('ACS')->setCompany('ACS Solution');
                 $Passer_title = 'PasserBy';
                 $visits_title = 'Visitors';
+                $exits_title = 'Exits';
                 $shopper_title = 'Shoppers';
                 $turn_rate_title = 'Turn in rate (%)';
                 $kids_title = 'Kids Visits';
@@ -287,6 +301,8 @@ class FootFallExportController extends Controller
                     $this->get_sheet_first($Passer_title, $excel, $sheet, $header, $passer);
                 if (!in_array('Visitors', $index_not, true))
                     $this->get_sheet_first($visits_title, $excel, $sheet, $header, $visits);
+                if (!in_array('Exits', $index_not, true))
+                     $this->get_sheet_first($exits_title, $excel, $sheet, $header, $exits);
                 if (!in_array('Shoppers', $index_not, true))
                     $this->get_sheet_first($shopper_title, $excel, $sheet, $header, $shopper);
                 if (!in_array('Turn in rate (%)', $index_not, true))
@@ -344,6 +360,7 @@ class FootFallExportController extends Controller
             }
             $passer_by1 = 0;
             $total_num_to_enter1 = 0;
+            $total_num_to_exit1 = 0;
             $shopper_visits1 = 0;
             $kids_visits1 = 0;
             $turn_in_rate1 = 0;
@@ -351,6 +368,7 @@ class FootFallExportController extends Controller
             $total_avg_time1 = 0;
             $passer_by2 = 0;
             $total_num_to_enter2 = 0;
+            $total_num_to_exit2 = 0;
             $shopper_visits2 = 0;
             $kids_visits2 = 0;
             $turn_in_rate2 = 0;
@@ -360,6 +378,7 @@ class FootFallExportController extends Controller
             foreach ($items as $item) {
                 $passer_by1  += (int) $item->passer_by;
                 $total_num_to_enter1  += (int) $item->num_to_enter;
+                $total_num_to_exit1  += (int) $item->num_to_exit;
                 $kids_visits1  += (int) $item->kids_visits;
                 $shopper_visits1  += (int) $item->shopper_visits;
                 $turn_in_rate1  += (float) $item->turn_in_rate;
@@ -372,6 +391,7 @@ class FootFallExportController extends Controller
             foreach ($itemsComapare as $item) {
                 $passer_by2  += (int) $item->passer_by;
                 $total_num_to_enter2  += (int) $item->num_to_enter;
+                $total_num_to_exit2  += (int) $item->num_to_exit;
                 $kids_visits2  += (int) $item->kids_visits;
                 $shopper_visits2  += (int) $item->shopper_visits;
                 $turn_in_rate2  += (float) $item->turn_in_rate;
@@ -392,7 +412,15 @@ class FootFallExportController extends Controller
                 $value_header['value3']    => $total_num_to_enter1,
                 $value_header['value4']   => $total_num_to_enter2,
                 'Difference'  => $total_num_to_enter1 >= $total_num_to_enter2  ? ($total_num_to_enter1 - $total_num_to_enter2) : ($total_num_to_enter2 - $total_num_to_enter1)
+            );  
+            
+            $exits[] = array(
+                'Date/Time'   => ' ',
+                $value_header['value3']    => $total_num_to_exit1,
+                $value_header['value4']   => $total_num_to_exit2,
+                'Difference'  => $total_num_to_exit1 >= $total_num_to_exit2  ? ($total_num_to_exit1 - $total_num_to_exit2) : ($total_num_to_exit2 - $total_num_to_exit1)
             );
+
             $traffic[] = array(
                 'Date/Time' => ' ',
                 $value_header['value3']    => $total_traffic1,
@@ -437,6 +465,15 @@ class FootFallExportController extends Controller
                         $value_header['value4']    => (isset($itemsComapare[$key1]) ? (int) $itemsComapare[$key1]->num_to_enter : 0),
                         'Difference'      => (isset($itemsComapare[$key1]) ?   $this->tinh_chenh_lech($item->num_to_enter, $itemsComapare[$key1]->num_to_enter) : 0)
                     );
+
+                    $exits[] = array(
+                         'Date/Time'       =>  $item->time_period . ((isset($itemsComapare[$key1]) && $view_by != "Hour") ? (' / ' . $itemsComapare[$key1]->time_period) : ''),
+                         $value_header['value3']    =>   (int) $item->num_to_exit,
+                         $value_header['value4']    => (isset($itemsComapare[$key1]) ? (int) $itemsComapare[$key1]->num_to_exit : 0),
+                         'Difference'      => (isset($itemsComapare[$key1]) ?   $this->tinh_chenh_lech($item->num_to_exit, $itemsComapare[$key1]->num_to_exit) : 0)
+                     );
+
+
                     $traffic[] = array(
                         'Date/Time'   =>   $item->time_period . ((isset($itemsComapare[$key1]) && $view_by != "Hour") ? (' / ' . $itemsComapare[$key1]->time_period) : ''),
                         $value_header['value3']    => (int) $item->traffic,
@@ -483,6 +520,13 @@ class FootFallExportController extends Controller
                         $value_header['value3']    =>   (int) $item->num_to_enter,
                         'Difference'      => (isset($items[$key1]) ?   $this->tinh_chenh_lech($item->num_to_enter, $items[$key1]->num_to_enter) : 0)
                     );
+                     $exits[] = array(
+                         'Date/Time'       =>  $item->time_period . (isset($items[$key1]) ? (' / ' . $items[$key1]->time_period) : ''),
+                         $value_header['value4']    => (isset($items[$key1]) ? (int) $items[$key1]->num_to_exit : 0),
+                         $value_header['value3']    =>   (int) $item->num_to_exit,
+                         'Difference'      => (isset($items[$key1]) ?   $this->tinh_chenh_lech($item->num_to_exit, $items[$key1]->num_to_exit) : 0)
+                     );
+
                     $traffic[] = array(
                         'Date/Time'   =>  $item->time_period . (isset($items[$key1]) ? (' / ' . $items[$key1]->time_period) : ''),
                         $value_header['value4']    => (isset($items[$key1])  ? (int) $items[$key1]->traffic : 0),
@@ -523,7 +567,7 @@ class FootFallExportController extends Controller
             }
 
             $name = Carbon::today()->format('d_m_Y') . 'v' . rand(1, 1000);
-            Excel::create('FOOTFALL_TIME_COMPARISON_' . $name, function ($excel) use ($visits, $traffic, $passer, $shopper, $turn_rate, $kids, $avg_time, $value_header, $index_not) {
+            Excel::create('FOOTFALL_TIME_COMPARISON_' . $name, function ($excel) use ($visits, $traffic,$exits, $passer, $shopper, $turn_rate, $kids, $avg_time, $value_header, $index_not) {
                 $header = array(
                     'dong1' => 'The results of measuring the number of visitors in and out at the point: ' . $value_header['value1'] . ' ',
                     'dong2' => 'Time:  ' . $value_header['value2'] . '  ',
@@ -534,6 +578,7 @@ class FootFallExportController extends Controller
 
                 $Passer_title = 'PasserBy';
                 $visits_title = 'Visitors';
+                $exits_title = 'Exits';
                 $shopper_title = 'Shoppers';
                 $turn_rate_title = 'Turn in rate (%)';
                 $kids_title = 'Kids Visits';
@@ -543,7 +588,9 @@ class FootFallExportController extends Controller
                 if (!in_array('PasserBy', $index_not, true))
                     $this->get_sheet_first($Passer_title, $excel, $sheet, $header, $passer);
                 if (!in_array('Visitors', $index_not, true))
-                    $this->get_sheet_first($visits_title, $excel, $sheet, $header, $visits);
+                    $this->get_sheet_first($visits_title, $excel, $sheet, $header, $visits); 
+                if (!in_array('Exits', $index_not, true))
+                    $this->get_sheet_first($exits_title, $excel, $sheet, $header, $exits);
                 if (!in_array('Shoppers', $index_not, true))
                     $this->get_sheet_first($shopper_title, $excel, $sheet, $header, $shopper);
                 if (!in_array('Turn in rate (%)', $index_not, true))
@@ -595,6 +642,7 @@ class FootFallExportController extends Controller
             }
             $passer_by = 0;
             $total_num_to_enter = 0;
+            $total_num_to_exit = 0;
             $shopper_visits = 0;
             $kids_visits = 0;
             $turn_in_rate = 0;
@@ -604,6 +652,7 @@ class FootFallExportController extends Controller
             foreach ($items as $item) {
                 $passer_by  += (int) $item->passer_by;
                 $total_num_to_enter  += (int) $item->num_to_enter;
+                $total_num_to_exit  += (int) $item->num_to_exit;
                 $kids_visits  += (int) $item->kids_visits;
                 $shopper_visits  += (int) $item->shopper_visits;
                 $turn_in_rate  += (float) $item->turn_in_rate;
@@ -618,6 +667,7 @@ class FootFallExportController extends Controller
                 'Locations'            =>  '',
                 'PasserBy'            => $passer_by,
                 'Visitors'              => $total_num_to_enter,
+                'Exits'              => $total_num_to_exit,
                 'Shoppers'      => $shopper_visits,
                 'Turn in rate (%)'    => $turn_in_rate,
                 'Traffic Flow'        => $total_traffic,
@@ -629,6 +679,7 @@ class FootFallExportController extends Controller
                     'Locations'           => $item->site_name,
                     'PasserBy'            => (int) $item->passer_by,
                     'Visitors'              => (int) $item->num_to_enter,
+                    'Exits'              => (int) $item->num_to_exit,
                     'Shoppers'      => (int) $item->shopper_visits,
                     'Turn in rate (%)'    => (float) $item->turn_in_rate,
                     'Traffic Flow'        => (float) $item->traffic,
@@ -721,6 +772,7 @@ class FootFallExportController extends Controller
             }
             $passer_by = 0;
             $total_num_to_enter = 0;
+            $total_num_to_exit = 0;
             $shopper_visits = 0;
             $kids_visits = 0;
             $turn_in_rate = 0;
@@ -736,6 +788,7 @@ class FootFallExportController extends Controller
                 //
                 $passer_by  += (int) $newItem['passer_by'];
                 $total_num_to_enter  += (int) $newItem['num_to_enter'];
+                $total_num_to_exit  += (int) $newItem['num_to_exit'];
                 $kids_visits  += (int) $newItem['kids_visits'];
                 $shopper_visits  += (int) $newItem['shopper_visits'];
                 $turn_in_rate  += (float) $newItem['turn_in_rate'];
@@ -748,14 +801,15 @@ class FootFallExportController extends Controller
             if ($i > 0)
                 $total_avg_time = ($row) > 0 ? (float) number_format(($total_avg_time / $i), 2, '.', '') : 0;
             $items1[] = array(
-                'Locations'            =>  '',
+                'Locations'           =>  '',
                 'PasserBy'            => $passer_by,
-                'Visitors'              => $total_num_to_enter,
-                'Shoppers'      => $shopper_visits,
+                'Visitors'            => $total_num_to_enter,
+                'Exits'               => $total_num_to_exit,
+                'Shoppers'            => $shopper_visits,
                 'Turn in rate (%)'    => $turn_in_rate,
                 'Traffic Flow'        => $total_traffic,
                 'Kids Visits'         => $kids_visits,
-                'Avg Time'      =>  $this->changeSecondsToformatTime($total_avg_time * 60),
+                'Avg Time'            =>  $this->changeSecondsToformatTime($total_avg_time * 60),
             );
             foreach ($exists_array as $item) {
                 //
@@ -768,6 +822,7 @@ class FootFallExportController extends Controller
                     'Locations'           => $newItem['site_name'],
                     'PasserBy'            => (int) $newItem['passer_by'],
                     'Visitors'              => (int) $newItem['num_to_enter'],
+                    'Exits'              => (int) $newItem['num_to_exit'],
                     'Shoppers'      => (int) $newItem['shopper_visits'],
                     'Turn in rate (%)'    => (float) $newItem['turn_in_rate'],
                     'Traffic Flow'        => (float) $newItem['traffic'],
@@ -1531,6 +1586,13 @@ class FootFallExportController extends Controller
             $org_name2        =>  (int) $itemsComapare[$key1]->num_to_enter,
             'Difference'      => ($item->num_to_enter >= $itemsComapare[$key1]->num_to_enter ? ($item->num_to_enter - $itemsComapare[$key1]->num_to_enter) : ($itemsComapare[$key1]->num_to_enter - $item->num_to_enter))
         );
+
+          $exits[] = array(
+              'Date/Time'       =>  $item->time_period,
+              $org_name1 . ' '       =>  (int) $item->num_to_exit,
+              $org_name2        =>  (int) $itemsComapare[$key1]->num_to_exit,
+              'Difference'      => ($item->num_to_exit >= $itemsComapare[$key1]->num_to_exit ? ($item->num_to_exit - $itemsComapare[$key1]->num_to_exit) : ($itemsComapare[$key1]->num_to_exit - $item->num_to_exit))
+          );
         $traffic[] = array(
             'Date/Time'   => $item->time_period,
             $org_name1 . ' '   => (int) $item->traffic,

@@ -164,20 +164,36 @@ class PerformanceController extends Controller
         $request_user = $request->user();
         $user_id = $request_user->id;
         $organization_id = $request->organization_id;
-
         $data = json_decode($request->data);
-        $num_to_enter_boo = (int) $data->num_to_enter;
-        $num_to_exit_boo = (int) $data->num_to_exit;
-        $avg_time_boo = (int) $data->avg_time;
-        $passer_by_boo = (int) $data->passer_by;
-        $staff_boo = (int) $data->staff;
-        $staff_traffic_boo = (int) $data->staff_traffic;
-        $kids_visits_boo = (int) $data->kids_visits;
-        $loyal_visits_boo = (int) $data->loyal_visits;
-        $loyal_purchased_boo = (int) $data->loyal_purchased;
-        $transactions_boo = (int) $data->transactions;
-        $sales_boo = (int) $data->sales;
-        $items_boo = (int) $data->items;
+
+       //  $jsonString = json_encode($data);
+       //  $logFile = 'D:\ACS\TaiLieu\DET\logfile.log';
+       //  error_log($jsonString, 3, $logFile);
+
+
+
+        $num_to_enter_boo = isset($data->num_to_enter) ? (int) $data->num_to_enter : 0;
+        $num_to_exit_boo = isset($data->num_to_exit) ? (int) $data->num_to_exit : 0;
+        $avg_time_boo = isset($data->avg_time) ? (int) $data->avg_time : 0;
+        $passer_by_boo = isset($data->passer_by) ? (int) $data->passer_by : 0;
+        $staff_boo = isset($data->staff) ? (int) $data->staff : 0;
+        $staff_traffic_boo = isset($data->staff_traffic) ? (int) $data->staff_traffic : 0;
+        $kids_visits_boo = isset($data->kids_visits) ? (int) $data->kids_visits : 0;
+        $loyal_visits_boo = isset($data->loyal_visits) ? (int) $data->loyal_visits : 0;
+        $loyal_purchased_boo = isset($data->loyal_purchased) ? (int) $data->loyal_purchased : 0;
+        $transactions_boo = isset($data->transactions) ? (int) $data->transactions : 0;
+        $sales_boo = isset($data->sales) ? (int) $data->sales : 0;
+        $items_boo = isset($data->items) ? (int) $data->items : 0;
+
+        $shoppers_boo = isset($data->shoppers) ? (int) $data->shoppers : 0;
+        $groups_boo = isset($data->groups) ? (int) $data->groups : 0;
+        $shippers_boo = isset($data->shippers) ? (int) $data->shippers : 0;
+        $males_boo = isset($data->males) ? (int) $data->males : 0;
+        $females_boo = isset($data->females) ? (int) $data->females : 0;
+        $childs_boo = isset($data->childs) ? (int) $data->childs : 0;
+        $adults_boo = isset($data->adults) ? (int) $data->adults : 0;
+        $ages_boo = isset($data->ages) ? (int) $data->ages : 0;
+
 
         $counter = 0;
         $counter_fail = 0;
@@ -211,7 +227,66 @@ class PerformanceController extends Controller
                                 $loyal_visits = array_key_exists('loyal_visits', $value) && is_numeric($value['loyal_visits']) ? $value['loyal_visits'] : 0;
                                 $loyal_purchased = array_key_exists('loyal_purchased', $value) && is_numeric($value['loyal_purchased']) ? $value['loyal_purchased'] : 0;
 
-                                $status = DB::select("exec sp_general_report_import_data $num_to_enter_boo, $num_to_exit_boo, $avg_time_boo, $passer_by_boo, $staff_traffic_boo, $staff_boo, $transactions_boo, $sales_boo, $items_boo, $kids_visits_boo, $loyal_visits_boo, $loyal_purchased_boo, $user_id, $organization_id, '$site_code', $start_time, $num_to_enter, $num_to_exit, $avg_time, $passer_by, $staff_traffic, $staff, $transactions, $sales, $items, $kids_visits, $loyal_visits, $loyal_purchased");
+                                 $shoppers = array_key_exists('shoppers', $value) && is_numeric($value['shoppers']) ? $value['shoppers'] : 0;
+                                 $groups = array_key_exists('groups', $value) && is_numeric($value['groups']) ? $value['groups'] : 0;
+                                 $shippers = array_key_exists('shippers', $value) && is_numeric($value['shippers']) ? $value['shippers'] : 0;
+                                 $males = array_key_exists('males', $value) && is_numeric($value['males']) ? $value['males'] : 0;
+                                 $females = array_key_exists('females', $value) && is_numeric($value['females']) ? $value['females'] : 0;
+                                 $adults = array_key_exists('adults', $value) && is_numeric($value['adults']) ? $value['adults'] : 0;
+                                 $childs = array_key_exists('childs', $value) && is_numeric($value['childs']) ? $value['childs'] : 0;
+                                 $ages = array_key_exists('ages', $value) && is_numeric($value['ages']) ? $value['ages'] : 0;
+
+                                $status = DB::select("
+                                        exec sp_general_report_import_data 
+                                            $num_to_enter_boo, 
+                                            $num_to_exit_boo, 
+                                            $avg_time_boo, 
+                                            $passer_by_boo, 
+                                            $staff_traffic_boo, 
+                                            $staff_boo, 
+                                            $transactions_boo, 
+                                            $sales_boo, 
+                                            $items_boo, 
+                                            $kids_visits_boo, 
+                                            $loyal_visits_boo, 
+                                            $loyal_purchased_boo,
+
+                                            $shoppers_boo, 
+                                            $groups_boo, 
+                                            $shippers_boo, 
+                                            $males_boo, 
+                                            $females_boo, 
+                                            $childs_boo, 
+                                            $adults_boo, 
+                                            $ages_boo, 
+
+                                            $user_id, 
+                                            $organization_id, 
+                                            '$site_code', 
+                                            $start_time, 
+                                            $num_to_enter, 
+                                            $num_to_exit, 
+                                            $avg_time, 
+                                            $passer_by, 
+                                            $staff_traffic, 
+                                            $staff, 
+                                            $transactions, 
+                                            $sales, 
+                                            $items, 
+                                            $kids_visits, 
+                                            $loyal_visits, 
+                                            $loyal_purchased,
+
+                                            $shoppers,
+                                            $groups,
+                                            $shippers,
+                                            $males,
+                                            $females,
+                                            $childs,
+                                            $adults,
+                                            $ages
+                                    ");
+
                                 if ($status[0]->result == 0) {
                                     $action_result = 0;
                                 } else {

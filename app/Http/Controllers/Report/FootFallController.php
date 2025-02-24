@@ -340,6 +340,11 @@ class FootFallController extends Controller
             if ($view_by == 'MONTH')
                 $time_day = DB::select("select time_period from fc_get_range_month_v2( $start_date,$end_date,$language )");
 
+           // $jsonString = json_encode($items);
+           // $logFile = 'D:\ACS\TaiLieu\DET\logfile.log';
+           // error_log($jsonString, 3, $logFile);
+
+
             $x_hour = count($time_hour);
             $y_day = count($time_day);
             $rows_items = count($items);
@@ -368,8 +373,20 @@ class FootFallController extends Controller
                 if ($index_source == 'EXITS')
                 $value = [$column, $row, (int) $items[$i]->num_to_exit];
 
-
-
+                if ($index_source == 'STAFFS')
+                $value = [$column, $row, (int) $items[$i]->staff];
+                if ($index_source == 'GROUPS')
+                $value = [$column, $row, (int) $items[$i]->groups];
+                if ($index_source == 'SHIPPERS')
+                $value = [$column, $row, (int) $items[$i]->shipper];
+                 if ($index_source == 'CHILD')
+                $value = [$column, $row, (int) $items[$i]->child];
+                 if ($index_source == 'ADULT')
+                $value = [$column, $row, (int) $items[$i]->adult];
+                 if ($index_source == 'MALE')
+                $value = [$column, $row, (int) $items[$i]->male];
+                 if ($index_source == 'FEMALE')
+                $value = [$column, $row, (int) $items[$i]->female];
 
                 array_push($array, $value);
             }
@@ -560,6 +577,12 @@ class FootFallController extends Controller
             $operation = "SUM";
             $data = DB::select("exec sp_general_report_data_in_out_sum_by_store $user_id, $organization_id, $site_id, $start_time, $end_time, $start_date, $end_date, $operation,0");
             // $parent = DB::select("exec sp_general_report_data_in_out_sum_by_store $user_id, $organization_id,0, $start_time, $end_time, $start_date, $end_date, $operation, 0");
+            
+             //$jsonString = json_encode($data);
+             //$logFile = 'D:\ACS\TaiLieu\DET\logfile.log';
+             //error_log($jsonString, 3, $logFile);
+            
+            
             $count = count($data);
             $array  = [];
             $i = 0;
@@ -578,6 +601,7 @@ class FootFallController extends Controller
                 $array[$i] = array('x' => $ox, 'y' => $oy, 'name' => $value->site_name, 'country' => $value->site_name, 'color' => '#e5853b');
                 $i++;
             }
+
             return response()->json(['chart' => $array, 'avg_ox' => $avg_ox, 'avg_oy' => $avg_oy]);  //, 'color' => $color
         } catch (\Exception $e) {
             $response = [];
@@ -647,36 +671,38 @@ class FootFallController extends Controller
         if ($indexOptionSelected === 'PASSERBY')
             $o = (int) $value->passer_by;
         if ($indexOptionSelected === 'VISITORS')
-            $o = (int) $value->num_to_enter;
+            $o = (int) $value->num_to_enter;   
+            if ($indexOptionSelected === 'EXITS')
+            $o = (int) $value->num_to_exit;
         if ($indexOptionSelected === 'SHOPPERS')
             $o = (int) $value->shopper_visits;
         if ($indexOptionSelected === 'TURN IN RATE (%)')
-            $o = (float) $value->turn_in_rate;
+            $o = (int) $value->turn_in_rate;
         if ($indexOptionSelected === 'TRAFFIC FLOW')
             $o = (int) $value->traffic;
         if ($indexOptionSelected === 'AVG TIME')
-            $o = (float) $value->avg_time;
+            $o = (int) $value->avg_time;
         if ($indexOptionSelected === 'KIDS VISITORS')
             $o = (int) $value->kids_visits;
         if ($indexOptionSelected === 'CONVERSION RATE (%)')
-            $o = (float) $value->conversion;
+            $o = (int) $value->conversion;
 
         if ($indexOptionSelected === 'AVG ITEMS')
-            $o = (float) $value->avg_item;
+            $o = (int) $value->avg_item;
         if ($indexOptionSelected === 'SALES YIELD')
             $o = (int) $value->sales_yield;
         if ($indexOptionSelected === 'MEMBER VISITORS (%)')
-            $o = (float) $value->loyal_visits;
+            $o = (int) $value->loyal_visits;
         if ($indexOptionSelected === 'MEMBER TRANSACTIONS (%)')
-            $o = (float) $value->loyal_transactions;
+            $o = (int) $value->loyal_transactions;
         if ($indexOptionSelected === 'MEMBER CONVERSION RATE (%)')
-            $o = (float) $value->loyal_conversion;
+            $o = (int) $value->loyal_conversion;
         if ($indexOptionSelected === 'MISSED SALES OPPORTUNITY (%)')
             $o = (int) $value->missed_sales;
         if ($indexOptionSelected === 'CX INDEX (%)')
-            $o = (float) $value->cx_index;
+            $o = (int) $value->cx_index;
         if ($indexOptionSelected === 'NPS INDEX (%)')
-            $o = (float) $value->nps_index;
+            $o = (int) $value->nps_index;
         if ($indexOptionSelected === 'TRANSACTIONS')
             $o = (int) $value->transactions;
         if ($indexOptionSelected === 'SALES')
@@ -684,63 +710,99 @@ class FootFallController extends Controller
         if ($indexOptionSelected === 'ATV')
             $o = (int) $value->atv;
         if ($indexOptionSelected === 'SALES HOURS')
-            $o = (float) $value->sales_hour;
+            $o = (int) $value->sales_hour;
         if ($indexOptionSelected === 'SHOPPERS ON SALES HOUR')
-            $o = (float) $value->shopper_on_s_h;
+            $o = (int) $value->shopper_on_s_h;
         if ($indexOptionSelected === 'SALES ON SALES HOUR')
-            $o = (float) $value->sales_on_s_h;
+            $o = (int) $value->sales_on_s_h;
         if ($indexOptionSelected === 'MISSED MEMBER RATE')
-            $o = $value->loyal_conversion > 0 ? (float) (100 - $value->loyal_conversion) : 0;
+            $o = $value->loyal_conversion > 0 ? (int) (100 - $value->loyal_conversion) : 0;
+
+        if ($indexOptionSelected === 'STAFFS') 
+            $o = (int)$value->staff ;
+        if ($indexOptionSelected === 'GROUPS')
+           $o = (int)$value-> groups ;
+        if ($indexOptionSelected === 'SHIPPERS')
+           $o =(int)$value->shipper ;
+        if ($indexOptionSelected === 'CHILD')
+           $o = (int)$value->child ;
+        if ($indexOptionSelected === 'ADULT')
+           $o = (int)$value->adult ;
+        if ($indexOptionSelected === 'MALE') 
+           $o = (int)$value->male;
+        if ($indexOptionSelected === 'FEMALE')
+           $o =(int) $value->female ;
+        if ($indexOptionSelected === 'REVENUE')
+          $o = (int)$value->revenue ;
     }
 
-    function  get_avg_oxy(&$indexOptionSelected, &$oo, &$count, &$value1)
+    function get_avg_oxy(&$indexOptionSelected, &$oo, &$count, &$value1)
     {
         if ($indexOptionSelected === 'PASSERBY') {
-            $oo  += (int) ($value1->passer_by / $count);
+            $oo += (int)($value1->passer_by / $count);
         } else if ($indexOptionSelected === 'VISITORS') {
-            $oo  += (int) ($value1->num_to_enter / $count);
+            $oo += (int)($value1->num_to_enter / $count);
+        } else if ($indexOptionSelected === 'EXITS') {
+            $oo += (int)($value1->num_to_exit / $count);
         } else if ($indexOptionSelected === 'SHOPPERS') {
-            $oo += (int) ($value1->shopper_visits / $count);
+            $oo += (int)($value1->shopper_visits / $count);
         } else if ($indexOptionSelected === 'TURN IN RATE') {
-            $oo += number_format((((float) $value1->turn_in_rate / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->turn_in_rate / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'TRAFFIC FLOW') {
-            $oo += (int) ($value1->traffic / $count);
+            $oo += (int)($value1->traffic / $count);
         } else if ($indexOptionSelected === 'AVG TIME') {
-            $oo += number_format((((float) $value1->avg_time / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->avg_time / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'KIDS VISITORS') {
-            $oo += (int) ($value1->kids_visits / $count);
+            $oo += (int)($value1->kids_visits / $count);
         } else if ($indexOptionSelected === 'Avg ITEMS') {
-            $oo += number_format((((float) $value1->avg_item / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->avg_item / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'SALES') {
-            $oo += number_format((((float) $value1->sales / $count)), 0, '.', '');
+            $oo += number_format((((int)$value1->sales / $count)), 0, '.', '');
         } else if ($indexOptionSelected === 'SALES YIELD') {
-            $oo += number_format((((float) $value1->sales_yield / $count)), 0, '.', '');
+            $oo += number_format((((int)$value1->sales_yield / $count)), 0, '.', '');
         } else if ($indexOptionSelected === 'MEMBER VISITORS') {
-            $oo += number_format((((float) $value1->loyal_visits / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->loyal_visits / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'MEMBER TRANSACTIONS') {
-            $oo += number_format((((float) $value1->loyal_transactions / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->loyal_transactions / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'MEMBER CONVERSION RATE') {
-            $oo += number_format((((float) $value1->loyal_conversion / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->loyal_conversion / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'MISSED SALES OPPORTUNITY') {
-            $oo += number_format((((float) $value1->missed_sales / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->missed_sales / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'CX INDEX') {
-            $oo += number_format((((float) $value1->cx_index / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->cx_index / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'NPS INDEX') {
-            $oo += number_format((((float) $value1->nps_index / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->nps_index / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'TRANSACTIONS') {
-            $oo += (int) ($value1->transactions / $count);
+            $oo += (int)($value1->transactions / $count);
         } else if ($indexOptionSelected === 'CONVERSION RATE') {
-            $oo += number_format((((float) $value1->conversion / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->conversion / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'ATV') {
-            $oo += number_format((((float) $value1->atv / $count)), 0, '.', '');
+            $oo += number_format((((int)$value1->atv / $count)), 0, '.', '');
         } else if ($indexOptionSelected === 'SALES HOURS') {
-            $oo += number_format((((float) $value1->sales_hour / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->sales_hour / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'SHOPPERS ON SALES HOUR') {
-            $oo += number_format((((float) $value1->shopper_on_s_h / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->shopper_on_s_h / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'SALES ON SALES HOUR') {
-            $oo += number_format((((float) $value1->sales_on_s_h / $count)), 2, '.', '');
+            $oo += number_format((((int)$value1->sales_on_s_h / $count)), 2, '.', '');
         } else if ($indexOptionSelected === 'MISSED MEMBER RATE') {
-            $oo += $value1->loyal_conversion > 0 ? number_format((((float) (100 - $value1->loyal_conversion) / $count)), 2, '.', '') : 0;
+            $oo += $value1->loyal_conversion > 0 ? number_format((((int)(100 - $value1->loyal_conversion) / $count)), 2, '.', '') : 0;
+        } else if ($indexOptionSelected === 'STAFFS') {
+            $oo += (int)($value1->staff / $count);
+        } else if ($indexOptionSelected === 'GROUPS') {
+            $oo += (int)($value1->groups / $count);
+        } else if ($indexOptionSelected === 'SHIPPERS') {
+            $oo += (int)($value1->shipper / $count);
+        } else if ($indexOptionSelected === 'CHILD') {
+            $oo += (int)($value1->child / $count);
+        } else if ($indexOptionSelected === 'ADULT') {
+            $oo += (int)($value1->adult / $count);
+        } else if ($indexOptionSelected === 'MALE') {
+            $oo += (int)($value1->male / $count);
+        } else if ($indexOptionSelected === 'FEMALE') {
+            $oo += (int)($value1->female / $count);
+        } else if ($indexOptionSelected === 'REVENUE') {
+            $oo += (int)($value1->revenue / $count);
         }
     }
+
 }
